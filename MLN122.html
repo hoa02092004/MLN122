@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thương vụ Masan & WinMart: Phân tích Kinh tế Chính trị</title>
+    <style>
+      /* CSS CHUNG */
+      body {
+        font-family: "Arial", sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7f9;
+        color: #333;
+      }
+
+      /* --- HEADER CẢI TIẾN --- */
+      header {
+        /* Sử dụng ảnh mln.jpg làm nền */
+        background-image: url('mln.jpg');
+        background-size: cover; /* Ảnh phủ kín header */
+        background-position: center; /* Căn giữa trọng tâm ảnh */
+        background-repeat: no-repeat;
+        
+        color: white;
+        padding: 60px 20px; /* Tăng chiều cao để nhìn rõ ảnh hơn */
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative; /* Để xử lý lớp phủ mờ */
+      }
+
+      /* Tạo lớp phủ màu tối để chữ dễ đọc hơn trên nền ảnh */
+      header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6); /* Màu đen mờ 60% */
+        z-index: 1;
+      }
+
+      /* Đẩy nội dung chữ lên trên lớp phủ */
+      header h1, header p {
+        position: relative;
+        z-index: 2;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* Đổ bóng chữ cho nổi bật */
+      }
+
+      header h1 {
+        margin-bottom: 10px;
+        font-size: 2.5em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+      header p {
+        font-size: 1.2em;
+        font-weight: 300;
+      }
+
+      /* --- MENU CẢI TIẾN (Nền trắng, ngăn cách bằng |) --- */
+      #menu {
+        background-color: #ffffff; /* Nền trắng */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        position: sticky; /* Menu dính lên trên khi cuộn */
+        top: 0;
+        z-index: 100;
+        border-bottom: 1px solid #eee;
+      }
+
+      #menu button {
+        padding: 15px 25px;
+        border: none;
+        background: none;
+        color: #333; /* Chữ màu đen/xám đậm */
+        font-size: 1em;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        font-weight: 500;
+      }
+
+      /* Tạo dấu gạch đứng | ngăn cách */
+      #menu button:not(:last-child)::after {
+        content: "|";
+        position: absolute;
+        right: 0;
+        color: #ccc; /* Màu của dấu gạch */
+        font-weight: normal;
+      }
+
+      #menu button:hover {
+        color: #d90000; /* Hover chuyển màu chữ đỏ */
+        background-color: #f9f9f9;
+      }
+
+      #menu button.active {
+        color: #d90000; /* Active chữ đỏ */
+        font-weight: bold;
+        border-bottom: 3px solid #d90000; /* Gạch chân đỏ thay vì nền đỏ */
+      }
+
+      /* KHU VỰC NỘI DUNG */
+      .container {
+        width: 90%;
+        max-width: 1000px;
+        margin: 30px auto;
+        background-color: white;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+        min-height: 500px;
+      }
+      .content-section {
+        display: none;
+        animation: fadeIn 0.5s ease;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      h2 {
+        color: #d90000;
+        border-bottom: 2px solid #f4f7f9;
+        padding-bottom: 10px;
+        margin-top: 0;
+      }
+
+      /* QUIZ CSS (Giữ nguyên logic cũ, chỉnh lại style cho đẹp) */
+      #quiz-container {
+        min-height: 200px;
+      }
+      .question-card {
+        border: 1px solid #eee;
+        padding: 25px;
+        border-radius: 12px;
+        background-color: #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+      }
+      .answer-option {
+        display: block;
+        padding: 12px 15px;
+        margin: 10px 0;
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .answer-option:hover:not(.disabled) {
+        background-color: #ffe8e8;
+        border-color: #d90000;
+      }
+      .disabled {
+        pointer-events: none;
+        opacity: 0.7;
+      }
+      .correct {
+        background-color: #d4edda !important;
+        border: 1px solid #c3e6cb !important;
+        color: #155724;
+        font-weight: bold;
+      }
+      .incorrect {
+        background-color: #f8d7da !important;
+        border: 1px solid #f5c6cb !important;
+        color: #721c24;
+      }
+      .rationale {
+        margin-top: 20px;
+        padding: 15px;
+        border-left: 4px solid #d90000;
+        background-color: #fff5f5;
+        border-radius: 0 4px 4px 0;
+      }
+      .quiz-buttons button {
+        padding: 10px 25px;
+        margin-right: 10px;
+        margin-top: 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .quiz-buttons button#check-btn {
+        background-color: #28a745;
+      }
+      .quiz-buttons button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+      
+      /* IFRAME & CANVA */
+      .canva-embed-container {
+        position: relative;
+        width: 100%;
+        height: 0;
+        padding-top: 56.25%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .canva-embed-container iframe {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%; border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>KINH TẾ CHÍNH TRỊ MÁC - LÊNIN</h1>
+      <p>"Thương vụ Masan & WinMart: Kỷ nguyên Tập trung Tư bản"</p>
+    </header>
+
+    <nav id="menu">
+      <button onclick="showSection('analysis', this)" class="active">
+        Giới thiệu
+      </button>
+      <button onclick="showSection('infographic', this)">
+        Thông tin
+      </button>
+      <button onclick="showSection('quiz-game', this)">
+        Câu hỏi
+      </button>
+      <button onclick="showSection('ai-usage', this)">
+        Phụ lục
+      </button>
+    </nav>
+
+    <div class="container">
+      <section id="analysis" class="content-section" style="display: block">
+          <h2>1. Giới thiệu Đề tài</h2>
+          <p>Trình bày tổng quan về thương vụ M&A lớn nhất ngành bán lẻ Việt Nam dưới góc nhìn Kinh tế Chính trị.</p>
+          <div class="canva-embed-container">
+            <iframe
+              loading="lazy"
+              src="https://www.canva.com/design/DAG7KqGxNQ0/6iPkbjN7zif06Tm6JLf-ZA/view?embed"
+              allowfullscreen="allowfullscreen"
+              allow="fullscreen"
+            >
+            </iframe>
+          </div>
+      </section>
+
+      <section id="infographic" class="content-section">
+        <h2>2. Infographic Timeline: Trực quan hóa Tập trung Tư bản</h2>
+        <div class="section-content iframe-content">
+          <p>
+            Infographic dưới đây so sánh sự khác biệt cơ bản giữa Tích tụ Tư bản (Tự lớn lên) và Tập trung Tư bản (Sáp nhập).
+          </p>
+          <div style="text-align: center; padding: 20px; background: #fafafa; border: 1px dashed #ccc;">
+            <p style="color: #999;">[Vị trí hiển thị file ảnh Infographic của bạn]</p>
+            </div>
+        </div>
+      </section>
+
+      <section id="quiz-game" class="content-section">
+        <h2>3. Minigame Quiz: Thử thách Doanh nhân</h2>
+        <p>
+          Hãy trả lời các câu hỏi trắc nghiệm để củng cố kiến thức về Tích tụ và Tập trung tư bản trong thương vụ này.
+        </p>
+        <div id="quiz-container"></div>
+        <div id="quiz-result" style="margin-top: 20px"></div>
+      </section>
+
+      <section id="ai-usage" class="content-section">
+        <h2>4. Phụ lục AI Usage & Liêm chính Học thuật</h2>
+        <div class="section-content">
+          <p>
+            <strong>Cam kết Liêm chính Học thuật:</strong> Nhóm cam kết không để
+            AI làm thay toàn bộ công việc. Các nội dung phân tích, đối chiếu lý
+            thuyết và kết luận cuối cùng là do nhóm thực hiện biên soạn và chịu
+            trách nhiệm học thuật.
+          </p>
+          <ul>
+            <li>
+              <strong>Công cụ AI sử dụng:</strong> Gemini 2.5 Flash, Canva AI,
+              Google Slides.
+            </li>
+            <li>
+              <strong>Mục đích sử dụng:</strong> Lên ý tưởng cấu trúc web/quiz,
+              tạo code template, tạo hình ảnh minh họa cho Infographic.
+            </li>
+            <li>
+              <strong>Kiểm chứng:</strong> Mọi định nghĩa (Tích tụ, Tập trung,
+              Tư bản Giả) đều được đối chiếu từ Giáo trình Kinh tế chính trị Mác
+              - Lênin.
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const quizData = [
+        {
+          question:
+            "Thương vụ Masan mua lại hệ thống VinMart/WinMart là hình thức mở rộng quy mô tư bản nào?",
+          options: [
+            "Tích tụ tư bản",
+            "Tập trung tư bản",
+            "Tuần hoàn tư bản",
+            "Tư bản cố định",
+          ],
+          answer: "Tập trung tư bản",
+          rationale:
+            "Tập trung tư bản là hợp nhất các tư bản cá biệt đang tồn tại để tạo ra một tư bản cá biệt lớn hơn, điển hình là các thương vụ M&A.",
+        },
+        {
+          question:
+            "Masan sử dụng lợi nhuận nội bộ để xây thêm 10 cửa hàng tiện lợi mới. Đây là ví dụ về hình thức nào?",
+          options: [
+            "Tập trung tư bản",
+            "Tích tụ tư bản",
+            "Tư bản giả",
+            "Lợi tức",
+          ],
+          answer: "Tích tụ tư bản",
+          rationale:
+            "Tích tụ tư bản là sự tăng thêm quy mô của tư bản cá biệt bằng cách tư bản hóa giá trị thặng dư (lợi nhuận).",
+        },
+        {
+          question:
+            "Hình thức Tập trung tư bản (Masan mua VinMart) có ưu điểm vượt trội nào về mặt thời gian so với Tích tụ tư bản?",
+          options: [
+            "Làm tăng tổng quy mô tư bản xã hội",
+            "Tăng quy mô tư bản cá biệt một cách nhanh chóng",
+            "Đảm bảo nguồn vốn thuần túy từ lợi nhuận",
+            "Làm giảm cường độ lao động",
+          ],
+          answer: "Tăng quy mô tư bản cá biệt một cách nhanh chóng",
+          rationale:
+            "Tập trung tư bản cho phép tăng quy mô tư bản cá biệt ngay lập tức, là con đường 'đi tắt' để mở rộng sản xuất.",
+        },
+        {
+          question:
+            "Để có vốn mua lại VinMart, Masan phát hành cổ phiếu và trái phiếu. C.Mác gọi các loại giấy tờ này là gì?",
+          options: [
+            "Tư bản tài chính",
+            "Tư bản giả",
+            "Tư bản khả biến",
+            "Chi phí sản xuất",
+          ],
+          answer: "Tư bản giả",
+          rationale:
+            "Chứng khoán, chứng quyền được C.Mác gọi là tư bản giả do nó được giao dịch tách biệt tương đối với quá trình sản xuất thực.",
+        },
+        {
+          question:
+            "Tập trung tư bản có làm tăng tổng quy mô tư bản xã hội (tổng vốn của toàn nền kinh tế) không?",
+          options: ["Có", "Không"],
+          answer: "Không",
+          rationale:
+            "Tập trung tư bản chỉ là sự hợp nhất vốn đã có sẵn, phân phối lại vốn giữa các nhà tư bản, không trực tiếp tạo ra vốn mới.",
+        }
+      ];
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+
+      // --- MENU LOGIC ---
+      function showSection(sectionId, clickedButton) {
+        document.querySelectorAll(".content-section").forEach((section) => {
+          section.style.display = "none";
+        });
+        document.getElementById(sectionId).style.display = "block";
+
+        document.querySelectorAll("#menu button").forEach((button) => {
+          button.classList.remove("active");
+        });
+        clickedButton.classList.add("active");
+
+        if (sectionId === "quiz-game") {
+            // Reset lại quiz nếu muốn mỗi lần vào là làm lại, hoặc giữ nguyên trạng thái
+            if (document.getElementById("quiz-container").innerHTML === "") {
+                 renderQuestion();
+            }
+        }
+      }
+
+      // --- QUIZ LOGIC ---
+      function renderQuestion() {
+        const container = document.getElementById("quiz-container");
+        container.innerHTML = "";
+        document.getElementById("quiz-result").innerHTML = "";
+
+        if (currentQuestionIndex >= quizData.length) {
+          displayFinalResult();
+          return;
+        }
+
+        const q = quizData[currentQuestionIndex];
+        const card = document.createElement("div");
+        card.className = "question-card";
+
+        let html = `
+                <h4>Câu ${currentQuestionIndex + 1}/${quizData.length}:</h4>
+                <strong style="font-size: 1.1em; display:block; margin-bottom:15px;">${q.question}</strong>
+                <div id="options-area">
+            `;
+
+        // Clone array to shuffle
+        const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+        
+        shuffledOptions.forEach((option) => {
+          html += `
+                    <label class="answer-option" onclick="handleOptionClick(this)">
+                        <input type="radio" name="currentQuestion" value="${option}"> <span style="margin-left:8px;">${option}</span>
+                    </label>
+                `;
+        });
+
+        html += `
+                </div>
+                <div class="quiz-buttons">
+                    <button id="check-btn" onclick="checkAnswer()" disabled>Kiểm tra</button>
+                    <button id="next-btn" onclick="nextQuestion()" disabled>Câu tiếp theo >></button>
+                </div>
+            `;
+
+        card.innerHTML = html;
+        container.appendChild(card);
+
+        card.querySelectorAll('input[type="radio"]').forEach((radio) => {
+          radio.addEventListener("change", () => {
+            document.getElementById("check-btn").disabled = false;
+          });
+        });
+      }
+
+      function handleOptionClick(selectedLabel) {
+         // Tự động chọn radio khi click vào label
+         const radio = selectedLabel.querySelector('input[type="radio"]');
+         radio.checked = true;
+         document.getElementById("check-btn").disabled = false;
+         
+         // Highlight tạm thời
+         document.querySelectorAll('.answer-option').forEach(el => el.style.backgroundColor = '#f8f9fa');
+         selectedLabel.style.backgroundColor = '#e2e6ea';
+      }
+
+      function checkAnswer() {
+        const card = document.querySelector(".question-card");
+        const selectedRadio = card.querySelector(
+          'input[name="currentQuestion"]:checked'
+        );
+
+        if (!selectedRadio) return;
+
+        const checkBtn = document.getElementById("check-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const selectedValue = selectedRadio.value;
+        const q = quizData[currentQuestionIndex];
+        const isCorrect = selectedValue === q.answer;
+
+        // Disable interactions
+        card.querySelectorAll(".answer-option").forEach((opt) => {
+          opt.classList.add("disabled");
+          opt.removeAttribute("onclick");
+        });
+        checkBtn.disabled = true;
+        nextBtn.disabled = false;
+
+        // Hiển thị kết quả trên UI
+        const allLabels = card.querySelectorAll(".answer-option");
+        allLabels.forEach(label => {
+            const radioVal = label.querySelector('input').value;
+            if (radioVal === q.answer) {
+                label.classList.add("correct");
+            } else if (radioVal === selectedValue && !isCorrect) {
+                label.classList.add("incorrect");
+            }
+        });
+
+        if (isCorrect) score++;
+
+        // Show Rationale
+        let rationaleElement = document.createElement("div");
+        rationaleElement.className = "rationale";
+        rationaleElement.innerHTML = `
+            <strong style="color: ${isCorrect ? '#155724' : '#721c24'}">${isCorrect ? "CHÍNH XÁC!" : "CHƯA ĐÚNG!"}</strong><br>
+            ${q.rationale}
+        `;
+        card.appendChild(rationaleElement);
+      }
+
+      function nextQuestion() {
+        currentQuestionIndex++;
+        renderQuestion();
+      }
+
+      function displayFinalResult() {
+        const container = document.getElementById("quiz-container");
+        container.innerHTML = `
+                <div class="question-card" style="text-align: center; padding: 40px;">
+                    <h3 style="color: #28a745; font-size: 2em; margin-bottom: 10px;">🎉 HOÀN THÀNH 🎉</h3>
+                    <p>Bạn đã trả lời đúng <strong style="font-size: 1.5em; color: #d90000;">${score}</strong> / ${quizData.length} câu hỏi.</p>
+                    <button onclick="restartQuiz()" style="margin-top:20px; padding: 12px 30px; background-color: #d90000; color: white; border:none; border-radius:5px; cursor:pointer; font-size:1.1em;">Làm lại</button>
+                </div>
+            `;
+      }
+
+      function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        renderQuestion();
+      }
+
+      // Khởi chạy ban đầu
+      document.addEventListener("DOMContentLoaded", () => {
+        showSection("analysis", document.querySelector("#menu button"));
+      });
+    </script>
+  </body>
+</html>
